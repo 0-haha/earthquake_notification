@@ -1,11 +1,12 @@
 version: '3.9'
 services:
     equake:
-      user: ${UID}:${GID}
+      user: ${uid}:${gid}
       build: .
       volumes:
         - .:/app
-        -  /run/user/${UID}/bus:/run/user/${UID}/bus
+        -  /run/user/${uid}/bus:/run/user/${uid}/bus
+      #entrypoint: ["python3", "main.py"]
       environment:
         - DBUS_SESSION_BUS_ADDRESS=${DBUS_SESSION_BUS_ADDRESS}
       security_opt:

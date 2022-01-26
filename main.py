@@ -85,7 +85,7 @@ def parse_equake(equake):
 
 def custom_request():
     endtime = datetime.now().isoformat()
-    start_time = datetime.now() - timedelta(hours=1)
+    start_time = datetime.now() - timedelta(hours=24)
     start_time = start_time.isoformat()
     minmag = 5.5
     # "alertlevel": "orange"
