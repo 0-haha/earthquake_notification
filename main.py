@@ -15,12 +15,13 @@ def cleanup():
     flag = False
     for equake in list(equake_data):
         equake_time = datetime.utcfromtimestamp(equake["properties"]["time"] / 1000)
-        equake_id_set.add(equake["id"])
         if now - equake_time > interval:
             equake_data.remove(equake)
+            equake_id_set.remove(equake["id"])
             flag = True
 
     if flag is True:
+        print(equake_data)
         save_equake()
 
     print("save data")
@@ -37,13 +38,14 @@ def read_equake():
         interval = timedelta(hours=48)
         for equake in list(data):
             equake_time = datetime.utcfromtimestamp(equake["properties"]["time"] / 1000)
+            print(now, equake_time)
             equake_id_set.add(equake["id"])
-            if now - equake_time > interval:
-                data.remove(equake)
-                flag = True
+            # if now - equake_time > interval:
+            #     data.remove(equake)
+            #     flag = True
 
-    if flag is True:
-        save_equake()
+    # if flag is True:
+    #     save_equake()
 
 def save_equake():
     with open('data.txt', "w") as f:
@@ -55,23 +57,24 @@ def parse_equake(equake):
     properties = equake["properties"]
     title = properties["title"]
     time = properties["time"] / 1000
-    place = properties["place"]
+    place = properties["place"] or ""
     mag = properties["mag"]
-    url = properties["url"]
-    alert = properties["alert"]
+    url = properties["url"] or ""
+    alert = properties["alert"] or ""
 
     geometry = equake["geometry"]["coordinates"]
-    longitude = geometry[0]
-    latitude = geometry[1]
-    depth = geometry[2]
+    longitude = geometry[0] or ""
+    latitude = geometry[1] or ""
+    depth = geometry[2] or ""
 
-    if mag > 5.5 and equake_id not in equake_id_set:
+    if mag > 4.5 and equake_id not in equake_id_set:
+        print(equake_id, longitude, latitude, depth, place, alert)
         equake_id_set.add(equake_id)
         equake_data.append(equake)
         body = \
             "Location: " + str(longitude) + "," + str(latitude) +\
             "\nDepth: " + str(depth) + " Km" +\
-            "\nTime: " + datetime.utcfromtimestamp(time).isoformat() +\
+            "\nTime: " + datetime.fromtimestamp(time).strftime("%m/%d/%Y, %I:%M:%S %p") +\
             "\nPlace: " + place +\
             "\nAlert: " + alert +\
             "\nDetail: <a href=\"" + url +"\">" + url +"</a>"
@@ -87,7 +90,8 @@ def custom_request():
     endtime = datetime.now().isoformat()
     start_time = datetime.now() - timedelta(hours=24)
     start_time = start_time.isoformat()
-    minmag = 5.5
+    minmag = 4.5
+    print("Request", str(endtime))
     # "alertlevel": "orange"
 
     params = {
@@ -118,6 +122,7 @@ def custom_request():
     return False
 
 read_equake()
+print(equake_id_set)
 custom_request()
 cleanup()
 
