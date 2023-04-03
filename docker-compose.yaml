@@ -6,6 +6,8 @@ services:
       volumes:
         - .:/app
         -  /run/user/${uid}/bus:/run/user/${uid}/bus
+        - "/etc/timezone:/etc/timezone:ro"
+        - "/etc/localtime:/etc/localtime:ro"
       #entrypoint: ["python3", "main.py"]
       environment:
         - DBUS_SESSION_BUS_ADDRESS=${DBUS_SESSION_BUS_ADDRESS}
